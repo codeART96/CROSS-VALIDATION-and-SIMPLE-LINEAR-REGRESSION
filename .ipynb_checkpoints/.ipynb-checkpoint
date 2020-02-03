@@ -1,0 +1,1068 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "import statsmodels.api as sm\n",
+    "from scipy import stats\n",
+    "from sklearn import linear_model\n",
+    "from sklearn.model_selection import train_test_split"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "salary_df = pd.read_csv('salary.csv')\n",
+    "#salary_meta = pd.read_csv('salary metadata.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>salary</th>\n",
+       "      <th>exprior</th>\n",
+       "      <th>yearsworked</th>\n",
+       "      <th>yearsrank</th>\n",
+       "      <th>market</th>\n",
+       "      <th>degree</th>\n",
+       "      <th>otherqual</th>\n",
+       "      <th>position</th>\n",
+       "      <th>male</th>\n",
+       "      <th>Field</th>\n",
+       "      <th>yearsabs</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>53000.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.17</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>58000.0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.24</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>45500.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.21</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>35782.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.99</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>34731.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0.91</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>509</td>\n",
+       "      <td>45906.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>17</td>\n",
+       "      <td>11</td>\n",
+       "      <td>0.92</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>70</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>510</td>\n",
+       "      <td>60402.0</td>\n",
+       "      <td>6</td>\n",
+       "      <td>19</td>\n",
+       "      <td>7</td>\n",
+       "      <td>0.86</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>72</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>511</td>\n",
+       "      <td>53187.0</td>\n",
+       "      <td>19</td>\n",
+       "      <td>7</td>\n",
+       "      <td>6</td>\n",
+       "      <td>0.78</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>4</td>\n",
+       "      <td>76</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>512</td>\n",
+       "      <td>56542.0</td>\n",
+       "      <td>8</td>\n",
+       "      <td>20</td>\n",
+       "      <td>10</td>\n",
+       "      <td>0.78</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>78</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>513</td>\n",
+       "      <td>52662.0</td>\n",
+       "      <td>13</td>\n",
+       "      <td>25</td>\n",
+       "      <td>11</td>\n",
+       "      <td>0.78</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>112</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>514 rows × 11 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      salary  exprior  yearsworked  yearsrank  market  degree  otherqual  \\\n",
+       "0    53000.0        0            0          0    1.17       1          0   \n",
+       "1    58000.0        1            0          0    1.24       1          0   \n",
+       "2    45500.0        0            0          0    1.21       1          0   \n",
+       "3    35782.0        0            2          1    0.99       1          0   \n",
+       "4    34731.0        0            2          2    0.91       1          0   \n",
+       "..       ...      ...          ...        ...     ...     ...        ...   \n",
+       "509  45906.0        6           17         11    0.92       1          0   \n",
+       "510  60402.0        6           19          7    0.86       1          0   \n",
+       "511  53187.0       19            7          6    0.78       1          0   \n",
+       "512  56542.0        8           20         10    0.78       1          0   \n",
+       "513  52662.0       13           25         11    0.78       1          0   \n",
+       "\n",
+       "     position  male  Field  yearsabs  \n",
+       "0           1     1      3         0  \n",
+       "1           1     1      2         0  \n",
+       "2           1     1      3         2  \n",
+       "3           1     1      4         1  \n",
+       "4           1     1      4         1  \n",
+       "..        ...   ...    ...       ...  \n",
+       "509         2     0      2        70  \n",
+       "510         3     0      1        72  \n",
+       "511         3     0      4        76  \n",
+       "512         3     0      2        78  \n",
+       "513         3     0      1       112  \n",
+       "\n",
+       "[514 rows x 11 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "salary_df"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# DATA WRANGLING"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>salary</th>\n",
+       "      <th>exprior</th>\n",
+       "      <th>yearsworked</th>\n",
+       "      <th>yearsrank</th>\n",
+       "      <th>market</th>\n",
+       "      <th>degree</th>\n",
+       "      <th>otherqual</th>\n",
+       "      <th>position</th>\n",
+       "      <th>male</th>\n",
+       "      <th>Field</th>\n",
+       "      <th>yearsabs</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>count</td>\n",
+       "      <td>513.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "      <td>514.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>mean</td>\n",
+       "      <td>50863.220098</td>\n",
+       "      <td>2.926070</td>\n",
+       "      <td>12.852140</td>\n",
+       "      <td>7.052529</td>\n",
+       "      <td>0.948521</td>\n",
+       "      <td>0.964981</td>\n",
+       "      <td>0.044747</td>\n",
+       "      <td>2.132296</td>\n",
+       "      <td>0.750973</td>\n",
+       "      <td>2.529183</td>\n",
+       "      <td>6.982490</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>std</td>\n",
+       "      <td>12685.132358</td>\n",
+       "      <td>4.791397</td>\n",
+       "      <td>9.444695</td>\n",
+       "      <td>6.414771</td>\n",
+       "      <td>0.149380</td>\n",
+       "      <td>0.184008</td>\n",
+       "      <td>0.206950</td>\n",
+       "      <td>0.820075</td>\n",
+       "      <td>0.432871</td>\n",
+       "      <td>1.127420</td>\n",
+       "      <td>16.873156</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>min</td>\n",
+       "      <td>29000.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.710000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>25%</td>\n",
+       "      <td>40000.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>0.840000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>50%</td>\n",
+       "      <td>50096.000000</td>\n",
+       "      <td>0.500000</td>\n",
+       "      <td>12.000000</td>\n",
+       "      <td>5.000000</td>\n",
+       "      <td>0.920000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>2.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>75%</td>\n",
+       "      <td>60345.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>22.000000</td>\n",
+       "      <td>12.000000</td>\n",
+       "      <td>1.020000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>2.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>max</td>\n",
+       "      <td>96156.000000</td>\n",
+       "      <td>25.000000</td>\n",
+       "      <td>41.000000</td>\n",
+       "      <td>28.000000</td>\n",
+       "      <td>1.330000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>118.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             salary     exprior  yearsworked   yearsrank      market  \\\n",
+       "count    513.000000  514.000000   514.000000  514.000000  514.000000   \n",
+       "mean   50863.220098    2.926070    12.852140    7.052529    0.948521   \n",
+       "std    12685.132358    4.791397     9.444695    6.414771    0.149380   \n",
+       "min    29000.000000    0.000000     0.000000    0.000000    0.710000   \n",
+       "25%    40000.000000    0.000000     4.000000    2.000000    0.840000   \n",
+       "50%    50096.000000    0.500000    12.000000    5.000000    0.920000   \n",
+       "75%    60345.000000    4.000000    22.000000   12.000000    1.020000   \n",
+       "max    96156.000000   25.000000    41.000000   28.000000    1.330000   \n",
+       "\n",
+       "           degree   otherqual    position        male       Field    yearsabs  \n",
+       "count  514.000000  514.000000  514.000000  514.000000  514.000000  514.000000  \n",
+       "mean     0.964981    0.044747    2.132296    0.750973    2.529183    6.982490  \n",
+       "std      0.184008    0.206950    0.820075    0.432871    1.127420   16.873156  \n",
+       "min      0.000000    0.000000    1.000000    0.000000    1.000000    0.000000  \n",
+       "25%      1.000000    0.000000    1.000000    1.000000    2.000000    0.000000  \n",
+       "50%      1.000000    0.000000    2.000000    1.000000    3.000000    1.000000  \n",
+       "75%      1.000000    0.000000    3.000000    1.000000    4.000000    2.000000  \n",
+       "max      1.000000    1.000000    3.000000    1.000000    4.000000  118.000000  "
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "salary_df.describe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 514 entries, 0 to 513\n",
+      "Data columns (total 11 columns):\n",
+      "salary         513 non-null float64\n",
+      "exprior        514 non-null int64\n",
+      "yearsworked    514 non-null int64\n",
+      "yearsrank      514 non-null int64\n",
+      "market         514 non-null float64\n",
+      "degree         514 non-null int64\n",
+      "otherqual      514 non-null int64\n",
+      "position       514 non-null int64\n",
+      "male           514 non-null int64\n",
+      "Field          514 non-null int64\n",
+      "yearsabs       514 non-null int64\n",
+      "dtypes: float64(2), int64(9)\n",
+      "memory usage: 44.3 KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "salary_df.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "salary         1\n",
+       "exprior        0\n",
+       "yearsworked    0\n",
+       "yearsrank      0\n",
+       "market         0\n",
+       "degree         0\n",
+       "otherqual      0\n",
+       "position       0\n",
+       "male           0\n",
+       "Field          0\n",
+       "yearsabs       0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "salary_df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "salary_df = salary_df.dropna(axis=0, subset=['salary'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "salary         False\n",
+       "exprior        False\n",
+       "yearsworked    False\n",
+       "yearsrank      False\n",
+       "market         False\n",
+       "degree         False\n",
+       "otherqual      False\n",
+       "position       False\n",
+       "male           False\n",
+       "Field          False\n",
+       "yearsabs       False\n",
+       "dtype: bool"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "salary_df.isnull().any()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>salary</th>\n",
+       "      <th>exprior</th>\n",
+       "      <th>yearsworked</th>\n",
+       "      <th>yearsrank</th>\n",
+       "      <th>market</th>\n",
+       "      <th>degree</th>\n",
+       "      <th>otherqual</th>\n",
+       "      <th>position</th>\n",
+       "      <th>male</th>\n",
+       "      <th>Field</th>\n",
+       "      <th>yearsabs</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>salary</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.119989</td>\n",
+       "      <td>0.623589</td>\n",
+       "      <td>0.610706</td>\n",
+       "      <td>0.407214</td>\n",
+       "      <td>0.044554</td>\n",
+       "      <td>0.167137</td>\n",
+       "      <td>0.702122</td>\n",
+       "      <td>0.361564</td>\n",
+       "      <td>-0.499316</td>\n",
+       "      <td>-0.069630</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>exprior</td>\n",
+       "      <td>0.119989</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.245788</td>\n",
+       "      <td>-0.065893</td>\n",
+       "      <td>-0.035202</td>\n",
+       "      <td>-0.049165</td>\n",
+       "      <td>0.264655</td>\n",
+       "      <td>0.118031</td>\n",
+       "      <td>0.047276</td>\n",
+       "      <td>-0.046854</td>\n",
+       "      <td>0.132022</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>yearsworked</td>\n",
+       "      <td>0.623589</td>\n",
+       "      <td>-0.245788</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.813456</td>\n",
+       "      <td>-0.070740</td>\n",
+       "      <td>0.028122</td>\n",
+       "      <td>-0.040157</td>\n",
+       "      <td>0.746311</td>\n",
+       "      <td>0.278286</td>\n",
+       "      <td>-0.264208</td>\n",
+       "      <td>0.056113</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>yearsrank</td>\n",
+       "      <td>0.610706</td>\n",
+       "      <td>-0.065893</td>\n",
+       "      <td>0.813456</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.026869</td>\n",
+       "      <td>0.006347</td>\n",
+       "      <td>0.007232</td>\n",
+       "      <td>0.484891</td>\n",
+       "      <td>0.237397</td>\n",
+       "      <td>-0.265620</td>\n",
+       "      <td>0.035962</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>market</td>\n",
+       "      <td>0.407214</td>\n",
+       "      <td>-0.035202</td>\n",
+       "      <td>-0.070740</td>\n",
+       "      <td>-0.026869</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.036456</td>\n",
+       "      <td>0.021641</td>\n",
+       "      <td>-0.013116</td>\n",
+       "      <td>0.181401</td>\n",
+       "      <td>-0.223887</td>\n",
+       "      <td>-0.167177</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>degree</td>\n",
+       "      <td>0.044554</td>\n",
+       "      <td>-0.049165</td>\n",
+       "      <td>0.028122</td>\n",
+       "      <td>0.006347</td>\n",
+       "      <td>0.036456</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.214654</td>\n",
+       "      <td>0.043335</td>\n",
+       "      <td>0.061419</td>\n",
+       "      <td>-0.099077</td>\n",
+       "      <td>0.029447</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>otherqual</td>\n",
+       "      <td>0.167137</td>\n",
+       "      <td>0.264655</td>\n",
+       "      <td>-0.040157</td>\n",
+       "      <td>0.007232</td>\n",
+       "      <td>0.021641</td>\n",
+       "      <td>-0.214654</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.160941</td>\n",
+       "      <td>0.016082</td>\n",
+       "      <td>-0.076202</td>\n",
+       "      <td>-0.017792</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>position</td>\n",
+       "      <td>0.702122</td>\n",
+       "      <td>0.118031</td>\n",
+       "      <td>0.746311</td>\n",
+       "      <td>0.484891</td>\n",
+       "      <td>-0.013116</td>\n",
+       "      <td>0.043335</td>\n",
+       "      <td>0.160941</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.317390</td>\n",
+       "      <td>-0.292313</td>\n",
+       "      <td>0.030521</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>male</td>\n",
+       "      <td>0.361564</td>\n",
+       "      <td>0.047276</td>\n",
+       "      <td>0.278286</td>\n",
+       "      <td>0.237397</td>\n",
+       "      <td>0.181401</td>\n",
+       "      <td>0.061419</td>\n",
+       "      <td>0.016082</td>\n",
+       "      <td>0.317390</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>-0.130599</td>\n",
+       "      <td>-0.622058</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>Field</td>\n",
+       "      <td>-0.499316</td>\n",
+       "      <td>-0.046854</td>\n",
+       "      <td>-0.264208</td>\n",
+       "      <td>-0.265620</td>\n",
+       "      <td>-0.223887</td>\n",
+       "      <td>-0.099077</td>\n",
+       "      <td>-0.076202</td>\n",
+       "      <td>-0.292313</td>\n",
+       "      <td>-0.130599</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>0.000778</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>yearsabs</td>\n",
+       "      <td>-0.069630</td>\n",
+       "      <td>0.132022</td>\n",
+       "      <td>0.056113</td>\n",
+       "      <td>0.035962</td>\n",
+       "      <td>-0.167177</td>\n",
+       "      <td>0.029447</td>\n",
+       "      <td>-0.017792</td>\n",
+       "      <td>0.030521</td>\n",
+       "      <td>-0.622058</td>\n",
+       "      <td>0.000778</td>\n",
+       "      <td>1.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               salary   exprior  yearsworked  yearsrank    market    degree  \\\n",
+       "salary       1.000000  0.119989     0.623589   0.610706  0.407214  0.044554   \n",
+       "exprior      0.119989  1.000000    -0.245788  -0.065893 -0.035202 -0.049165   \n",
+       "yearsworked  0.623589 -0.245788     1.000000   0.813456 -0.070740  0.028122   \n",
+       "yearsrank    0.610706 -0.065893     0.813456   1.000000 -0.026869  0.006347   \n",
+       "market       0.407214 -0.035202    -0.070740  -0.026869  1.000000  0.036456   \n",
+       "degree       0.044554 -0.049165     0.028122   0.006347  0.036456  1.000000   \n",
+       "otherqual    0.167137  0.264655    -0.040157   0.007232  0.021641 -0.214654   \n",
+       "position     0.702122  0.118031     0.746311   0.484891 -0.013116  0.043335   \n",
+       "male         0.361564  0.047276     0.278286   0.237397  0.181401  0.061419   \n",
+       "Field       -0.499316 -0.046854    -0.264208  -0.265620 -0.223887 -0.099077   \n",
+       "yearsabs    -0.069630  0.132022     0.056113   0.035962 -0.167177  0.029447   \n",
+       "\n",
+       "             otherqual  position      male     Field  yearsabs  \n",
+       "salary        0.167137  0.702122  0.361564 -0.499316 -0.069630  \n",
+       "exprior       0.264655  0.118031  0.047276 -0.046854  0.132022  \n",
+       "yearsworked  -0.040157  0.746311  0.278286 -0.264208  0.056113  \n",
+       "yearsrank     0.007232  0.484891  0.237397 -0.265620  0.035962  \n",
+       "market        0.021641 -0.013116  0.181401 -0.223887 -0.167177  \n",
+       "degree       -0.214654  0.043335  0.061419 -0.099077  0.029447  \n",
+       "otherqual     1.000000  0.160941  0.016082 -0.076202 -0.017792  \n",
+       "position      0.160941  1.000000  0.317390 -0.292313  0.030521  \n",
+       "male          0.016082  0.317390  1.000000 -0.130599 -0.622058  \n",
+       "Field        -0.076202 -0.292313 -0.130599  1.000000  0.000778  \n",
+       "yearsabs     -0.017792  0.030521 -0.622058  0.000778  1.000000  "
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "salary_df.corr('pearson')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# EDA"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### finding patterns, relationships, or anomalies to inform our subsequent analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "g = sns.pairplot(salary_df, kind='reg')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Used pairs plots to quickly explore distributions and relationships in the dataset. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "g = plt.subplots(figsize=(18, 8))\n",
+    "g = sns.heatmap(salary_df.corr(),yticklabels=True,annot=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "yearsworked, yearsrank, position"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "ax = sns.regplot(x=salary_df['yearsworked'], y=salary_df['salary'], ci=95, truncate=False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Using a 95% confidence interval"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.model_selection import train_test_split"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.linear_model import LogisticRegression"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X = salary_df[\"yearsworked\"]\n",
+    "y = salary_df[\"salary\"]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "y_test"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.1 Does the model significantly predict the dependent variable? Report the amount of variance explained (R^2) and significance value (p) to support your answer."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 2.2 What percentage of the variance in employees’ salaries is accounted for by the number of years they have worked?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 3. What does the unstandardized coefficient (B or ‘coef’ in statsmodels) tell you about the relationship between Years Worked and Salary?\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 4.What do the 95% confidence intervals [0.025, 0.975] mean?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 5. Calculate the expected salary for someone with 12 years’ work experience"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 6. Calculate the expected salary for someone with 80 years’ work experience. Are there any problems with this prediction? If so, what are they?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 7. We have only looked at the number of years an employee has worked. What other employee characteristics might influence their salary?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 8. How does your model compare when running it on the test set - what is the difference in the Root Mean Square Error (RMSE) between the training and test sets? Is there any evidence of overfitting?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
